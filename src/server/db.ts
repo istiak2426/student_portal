@@ -265,15 +265,17 @@ export function runSql(sql: string, params: any[] = []): void {
 export function seedInitialData(database: Database): void {
   const now = new Date().toISOString();
   
-  // Programmes
+  // 5 Programmes
   database.run(`
     INSERT OR REPLACE INTO programmes (id, code, name, department, annual_fee, duration_years, created_at) VALUES
     ('prog-cs', 'BSc-CS', 'BSc (Hons) Computer Science', 'School of Computing & Engineering', 12500, 3, '${now}'),
     ('prog-ds', 'MSc-DS', 'MSc Data Science & Artificial Intelligence', 'School of Computing & Engineering', 15800, 1, '${now}'),
-    ('prog-ba', 'BA-BA', 'BA (Hons) Business Administration', 'School of Management & Business', 10200, 3, '${now}');
+    ('prog-ba', 'BA-BA', 'BA (Hons) Business Administration', 'School of Management & Business', 10200, 3, '${now}'),
+    ('prog-se', 'BEng-SE', 'BEng (Hons) Software Engineering', 'School of Computing & Engineering', 13200, 3, '${now}'),
+    ('prog-cyber', 'MSc-CY', 'MSc Cyber Security & Digital Forensics', 'School of Computing & Engineering', 16500, 1, '${now}');
   `);
 
-  // 6 Diverse Students with realistic Registry workflows
+  // 12 Diverse Students
   database.run(`
     INSERT OR REPLACE INTO students (id, student_id, full_name, email, dob, programme_id, academic_year, enrolment_status, fee_due_date, created_at) VALUES
     ('stu-001', 'SMS-2025-0001', 'Tariq Rahman', 'tariq.rahman@student.pen.edu', '2004-03-15', 'prog-cs', '2025/2026', 'Enrolled', '2025-10-15', '${now}'),
@@ -281,16 +283,16 @@ export function seedInitialData(database: Database): void {
     ('stu-003', 'SMS-2025-0003', 'Liam O''Connor', 'liam.oconnor@student.pen.edu', '2003-11-09', 'prog-cs', '2025/2026', 'Deferred', '2025-12-01', '${now}'),
     ('stu-004', 'SMS-2024-0014', 'Aisha Patel', 'aisha.patel@student.pen.edu', '2002-05-30', 'prog-ba', '2024/2025', 'Enrolled', '2025-01-10', '${now}'),
     ('stu-005', 'SMS-2024-0022', 'Marcus Vance', 'marcus.vance@student.pen.edu', '1999-12-04', 'prog-ds', '2024/2025', 'Completed', '2024-11-01', '${now}'),
-    ('stu-006', 'SMS-2025-0004', 'Elena Rostova', 'elena.rostova@student.pen.edu', '2004-07-19', 'prog-cs', '2025/2026', 'Enrolled', '2025-10-15', '${now}');
+    ('stu-006', 'SMS-2025-0004', 'Elena Rostova', 'elena.rostova@student.pen.edu', '2004-07-19', 'prog-cs', '2025/2026', 'Enrolled', '2025-10-15', '${now}'),
+    ('stu-007', 'SMS-2025-0005', 'Daniel Mwangi', 'daniel.mwangi@student.pen.edu', '2003-09-14', 'prog-se', '2025/2026', 'Enrolled', '2025-10-15', '${now}'),
+    ('stu-008', 'SMS-2025-0006', 'Chloe Bennett', 'chloe.bennett@student.pen.edu', '2000-04-18', 'prog-cyber', '2025/2026', 'Enrolled', '2025-10-15', '${now}'),
+    ('stu-009', 'SMS-2025-0007', 'James Wilson', 'james.wilson@student.pen.edu', '2004-01-25', 'prog-ba', '2025/2026', 'Enrolled', '2025-10-15', '${now}'),
+    ('stu-010', 'SMS-2025-0008', 'Fatima Al-Mansoor', 'fatima.almansoor@student.pen.edu', '2003-12-08', 'prog-se', '2025/2026', 'Enrolled', '2025-11-20', '${now}'),
+    ('stu-011', 'SMS-2024-0035', 'Lucas Silva', 'lucas.silva@student.pen.edu', '2002-10-11', 'prog-cs', '2024/2025', 'Withdrawn', '2024-10-15', '${now}'),
+    ('stu-012', 'SMS-2025-0009', 'Priya Sharma', 'priya.sharma@student.pen.edu', '2001-06-03', 'prog-ds', '2025/2026', 'Enrolled', '2025-10-15', '${now}');
   `);
 
   // Fee Payments
-  // Tariq: £12500 fee, paid £8000 -> £4500 outstanding (Overdue)
-  // Sophia: £15800 fee, paid £15800 -> £0 outstanding (Paid in Full)
-  // Liam: £12500 fee, paid £3000 -> £9500 outstanding (Deferred)
-  // Aisha: £10200 fee, paid £5000 -> £5200 outstanding (Overdue)
-  // Marcus: £15800 fee, paid £15800 -> £0 outstanding (Completed)
-  // Elena: £12500 fee, paid £12500 -> £0 outstanding (Paid in Full)
   database.run(`
     INSERT OR REPLACE INTO payments (id, student_id, amount, payment_date, reference_number, payment_method, receipt_status, notes, created_at) VALUES
     ('pay-001', 'stu-001', 5000, '2025-09-12', 'PAY-2025-8801', 'Bank Transfer', 'Confirmed', 'Term 1 Initial Tuition Instalment', '${now}'),
@@ -300,36 +302,55 @@ export function seedInitialData(database: Database): void {
     ('pay-005', 'stu-004', 5000, '2024-10-02', 'PAY-2024-4411', 'Bank Transfer', 'Confirmed', 'First Instalment 2024/25', '${now}'),
     ('pay-006', 'stu-005', 8000, '2024-09-10', 'PAY-2024-3301', 'Bank Transfer', 'Confirmed', 'Term 1 Tuition', '${now}'),
     ('pay-007', 'stu-005', 7800, '2025-01-14', 'PAY-2025-1109', 'Bank Transfer', 'Confirmed', 'Term 2 Final Settlement', '${now}'),
-    ('pay-008', 'stu-006', 12500, '2025-09-08', 'PAY-2025-9921', 'Credit Card', 'Confirmed', 'Full Undergraduate Tuition Payment', '${now}');
+    ('pay-008', 'stu-006', 12500, '2025-09-08', 'PAY-2025-9921', 'Credit Card', 'Confirmed', 'Full Undergraduate Tuition Payment', '${now}'),
+    ('pay-009', 'stu-007', 7000, '2025-09-18', 'PAY-2025-5510', 'Bank Transfer', 'Confirmed', 'Semester 1 instalment', '${now}'),
+    ('pay-010', 'stu-008', 16500, '2025-09-02', 'PAY-2025-4420', 'Bank Transfer', 'Confirmed', 'Full Postgraduate Tuition Fee upfront', '${now}'),
+    ('pay-011', 'stu-009', 10200, '2025-09-11', 'PAY-2025-3315', 'Credit Card', 'Confirmed', 'Annual Tuition settled in full', '${now}'),
+    ('pay-012', 'stu-010', 5000, '2025-09-22', 'PAY-2025-2201', 'Direct Debit', 'Confirmed', 'Term 1 Deposit', '${now}'),
+    ('pay-013', 'stu-010', 4500, '2025-10-25', 'PAY-2025-2202', 'Bank Transfer', 'Confirmed', 'Term 1 Second Instalment', '${now}'),
+    ('pay-014', 'stu-011', 4000, '2024-09-14', 'PAY-2024-1188', 'Credit Card', 'Confirmed', 'Initial term fee before withdrawal', '${now}'),
+    ('pay-015', 'stu-012', 8000, '2025-09-15', 'PAY-2025-8833', 'Bank Transfer', 'Confirmed', 'Term 1 Tuition Instalment', '${now}');
   `);
 
-  // Assessments
+  // 6 Assessments
   database.run(`
     INSERT OR REPLACE INTO assessments (id, title, module_code, module_name, programme_id, deadline, max_marks, pass_marks, instructions, created_at) VALUES
     ('asm-001', 'Algorithms & Data Structures Coursework', 'CS102', 'Algorithms & Data Structures', 'prog-cs', '2025-11-20T23:59', 100, 40, 'Implement balanced AVL search trees and write a benchmarking report comparing O(log n) operations against hash tables. Submit as PDF or DOCX.', '${now}'),
     ('asm-002', 'Deep Learning Model Optimization Project', 'DS501', 'Applied Neural Networks', 'prog-ds', '2025-11-10T17:00', 100, 40, 'Train and evaluate a transformer architecture on custom domain data with ablation studies and hyperparameter logs.', '${now}'),
     ('asm-003', 'Corporate Strategic Analysis Report', 'BA304', 'Strategic Management', 'prog-ba', '2025-12-05T12:00', 100, 40, 'Comprehensive strategic analysis of an international market entrant using Porter Five Forces, VRIO, and financial ratios.', '${now}'),
-    ('asm-004', 'Software Engineering Architecture Specification', 'CS105', 'Software Architecture', 'prog-cs', '2025-10-30T18:00', 100, 40, 'System design document including C4 architecture diagrams and REST API schema contracts.', '${now}');
+    ('asm-004', 'Software Engineering Architecture Specification', 'CS105', 'Software Architecture', 'prog-cs', '2025-10-30T18:00', 100, 40, 'System design document including C4 architecture diagrams and REST API schema contracts.', '${now}'),
+    ('asm-005', 'Cloud Native Microservices Deployment', 'SE202', 'Cloud Systems Engineering', 'prog-se', '2025-11-28T23:59', 100, 40, 'Deploy a containerized microservices application with automated CI/CD pipeline and load testing analysis.', '${now}'),
+    ('asm-006', 'Network Penetration Testing Audit Report', 'CY502', 'Offensive Security', 'prog-cyber', '2025-11-15T16:00', 100, 40, 'Perform a black-box security audit against a sandbox staging network and compile an industry vulnerability mitigation report.', '${now}');
   `);
 
-  // Submissions (including on-time, late submission, and resubmitted v2)
+  // Submissions
   database.run(`
     INSERT OR REPLACE INTO submissions (id, assessment_id, student_id, file_name, file_size_kb, file_type, submitted_at, is_late, version, comments, created_at) VALUES
     ('sub-001', 'asm-001', 'stu-001', 'Tariq_Rahman_CS102_Coursework_v2.pdf', 1420.5, 'PDF', '2025-11-19T14:30', 0, 2, 'Revised benchmark charts as per lab feedback.', '${now}'),
     ('sub-002', 'asm-001', 'stu-006', 'Elena_Rostova_CS102_Coursework.pdf', 980.2, 'PDF', '2025-11-20T19:45', 0, 1, 'Final submission with full code repository appendix.', '${now}'),
     ('sub-003', 'asm-002', 'stu-002', 'Sophia_Zhang_DS501_Project.pdf', 3450.8, 'PDF', '2025-11-09T11:15', 0, 1, 'Includes PyTorch checkpoints evaluation metrics and ROC curves.', '${now}'),
     ('sub-004', 'asm-004', 'stu-001', 'Tariq_Rahman_CS105_LateSubmission.docx', 1150.0, 'DOCX', '2025-10-31T09:12', 1, 1, 'Submitted 15 hours late due to medical extenuating circumstance application pending.', '${now}'),
-    ('sub-005', 'asm-003', 'stu-004', 'Aisha_Patel_BA304_Report.pdf', 2100.4, 'PDF', '2025-12-04T16:20', 0, 1, 'Case study on fintech market entry in Southeast Asia.', '${now}');
+    ('sub-005', 'asm-003', 'stu-004', 'Aisha_Patel_BA304_Report.pdf', 2100.4, 'PDF', '2025-12-04T16:20', 0, 1, 'Case study on fintech market entry in Southeast Asia.', '${now}'),
+    ('sub-006', 'asm-005', 'stu-007', 'Daniel_Mwangi_SE202_CloudReport.pdf', 1850.2, 'PDF', '2025-11-27T21:10', 0, 1, 'Kubernetes cluster deployment and latency benchmark graphs.', '${now}'),
+    ('sub-007', 'asm-006', 'stu-008', 'Chloe_Bennett_CY502_PentestAudit.pdf', 2900.0, 'PDF', '2025-11-14T15:40', 0, 1, 'Complete vulnerability mitigation matrix and CVSS risk scores.', '${now}'),
+    ('sub-008', 'asm-003', 'stu-009', 'James_Wilson_BA304_Strategy_v2.docx', 1320.5, 'DOCX', '2025-12-05T10:15', 0, 2, 'Updated SWOT and financial ratio calculations.', '${now}'),
+    ('sub-009', 'asm-005', 'stu-010', 'Fatima_AlMansoor_SE202_Project.pdf', 2400.1, 'PDF', '2025-11-28T22:00', 0, 1, 'Terraform scripts and container orchestration docs.', '${now}'),
+    ('sub-010', 'asm-002', 'stu-012', 'Priya_Sharma_DS501_LateSubmission.pdf', 3100.0, 'PDF', '2025-11-11T08:30', 1, 1, 'Submitted late following power outage during model training.', '${now}');
   `);
 
-  // Grades (including Distinction, Merit, Pass, and Withheld results)
+  // Grades (Distinction, Merit, Pass, Fail, Published, Withheld)
   database.run(`
     INSERT OR REPLACE INTO grades (id, assessment_id, student_id, numeric_grade, classification, is_published, feedback, graded_by, graded_at, published_at) VALUES
-    ('grd-001', 'asm-001', 'stu-001', 78.5, 'Distinction', 1, 'Exceptional AVL tree implementation with thorough amortized analysis and clean memory profiling.', 'Dr. Elizabeth Thorne, Head of Registry Assessments', '2025-11-25T10:00', '2025-11-26T09:00'),
-    ('grd-002', 'asm-001', 'stu-006', 64.0, 'Merit', 1, 'Good algorithmic rigor. Minor edge-case omissions in deletion rebalancing.', 'Dr. Elizabeth Thorne, Head of Registry Assessments', '2025-11-25T11:30', '2025-11-26T09:00'),
-    ('grd-003', 'asm-002', 'stu-002', 88.0, 'Distinction', 1, 'Outstanding research-grade transformer optimization. Publication-worthy ablation analysis.', 'Prof. Julian Davies, AI Lead', '2025-11-15T14:00', '2025-11-16T10:00'),
-    ('grd-004', 'asm-004', 'stu-001', 58.0, 'Pass', 0, 'Solid architectural design. Results currently withheld pending Registry verification of extenuating circumstances for late penalty deduction.', 'Registry Moderation Panel', '2025-11-05T15:00', NULL),
-    ('grd-005', 'asm-003', 'stu-004', 72.0, 'Distinction', 1, 'Comprehensive financial ratio triangulation and well-grounded competitive strategy.', 'Dr. Alan Miller, Management Chair', '2025-12-10T11:00', '2025-12-11T09:00');
+    ('grd-001', 'asm-001', 'stu-001', 78.5, 'Distinction', 1, 'Exceptional AVL tree implementation with thorough amortized analysis and clean memory profiling.', 'Registry Examiner', '2025-11-25T10:00', '2025-11-26T09:00'),
+    ('grd-002', 'asm-001', 'stu-006', 64.0, 'Merit', 1, 'Good algorithmic rigor. Minor edge-case omissions in deletion rebalancing.', 'Registry Examiner', '2025-11-25T11:30', '2025-11-26T09:00'),
+    ('grd-003', 'asm-002', 'stu-002', 88.0, 'Distinction', 1, 'Outstanding research-grade transformer optimization. Publication-worthy ablation analysis.', 'Registry Examiner', '2025-11-15T14:00', '2025-11-16T10:00'),
+    ('grd-004', 'asm-004', 'stu-001', 58.0, 'Pass', 0, 'Solid architectural design. Results withheld pending verification of extenuating circumstances for late submission.', 'Registry Examiner', '2025-11-05T15:00', NULL),
+    ('grd-005', 'asm-003', 'stu-004', 72.0, 'Distinction', 1, 'Comprehensive financial ratio triangulation and well-grounded competitive strategy.', 'Registry Examiner', '2025-12-10T11:00', '2025-12-11T09:00'),
+    ('grd-006', 'asm-005', 'stu-007', 81.0, 'Distinction', 1, 'Superb Kubernetes deployment with automated health checks and clean GitOps workflow.', 'Registry Examiner', '2025-11-30T10:00', '2025-12-01T09:00'),
+    ('grd-007', 'asm-006', 'stu-008', 92.0, 'Distinction', 1, 'Exemplary penetration testing report. Thorough risk classification and actionable remediation steps.', 'Registry Examiner', '2025-11-18T14:30', '2025-11-19T10:00'),
+    ('grd-008', 'asm-003', 'stu-009', 66.5, 'Merit', 1, 'Strong strategic analysis with sound application of Porter Five Forces framework.', 'Registry Examiner', '2025-12-10T14:00', '2025-12-11T09:00'),
+    ('grd-009', 'asm-005', 'stu-010', 55.0, 'Pass', 1, 'Satisfactory containerization. CI/CD pipeline lacked automated test integration.', 'Registry Examiner', '2025-11-30T12:00', '2025-12-01T09:00'),
+    ('grd-010', 'asm-002', 'stu-012', 62.0, 'Merit', 0, 'Competent neural network optimization. Grade withheld pending late submission penalty calculation.', 'Registry Examiner', '2025-11-15T16:00', NULL);
   `);
 }
 
