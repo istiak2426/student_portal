@@ -1,0 +1,6 @@
+{
+  "name": "PEN Global SMS - Registry Module",
+  "description": "A focused Registry Administrator web application managing Student Enrolment, Fees & Payments, Assessment Submissions, and Marksheet Publishing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

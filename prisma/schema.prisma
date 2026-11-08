@@ -1,0 +1,144 @@
+// prisma/schema.prisma
+// PEN Global (concern of PEN Group) | Technical Assessment | Student Management System - Registry Module
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // For local testing or SQLite: change to "sqlite" or use DATABASE_URL
+  url      = env("DATABASE_URL")
+}
+
+enum EnrolmentStatus {
+  Enrolled
+  Deferred
+  Withdrawn
+  Completed
+}
+
+enum GradeClassification {
+  Fail
+  Pass
+  Merit
+  Distinction
+}
+
+model Programme {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  name          String
+  department    String
+  annualFee     Decimal      @db.Decimal(10, 2)
+  durationYears Int          @default(3)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  students      Student[]
+  assessments   Assessment[]
+
+  @@map("programmes")
+}
+
+model Student {
+  id              String          @id @default(uuid())
+  studentId       String          @unique // Auto-generated format: SMS-YYYY-0001
+  fullName        String
+  email           String          @unique
+  dob             DateTime
+  programmeId     String
+  programme       Programme       @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+  academicYear    String          // e.g. 2024/2025 or 2025/2026
+  enrolmentStatus EnrolmentStatus @default(Enrolled)
+  feeDueDate      DateTime
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  payments        Payment[]
+  submissions     Submission[]
+  grades          Grade[]
+
+  @@index([enrolmentStatus])
+  @@index([programmeId])
+  @@map("students")
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  amount          Decimal  @db.Decimal(10, 2)
+  paymentDate     DateTime
+  referenceNumber String   @unique // e.g. PAY-2025-8801
+  paymentMethod   String   @default("Bank Transfer")
+  receiptStatus   String   @default("Confirmed")
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([studentId])
+  @@map("payments")
+}
+
+model Assessment {
+  id           String       @id @default(uuid())
+  title        String
+  moduleCode   String
+  moduleName   String
+  programmeId  String
+  programme    Programme    @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+  deadline     DateTime
+  maxMarks     Decimal      @default(100.00) @db.Decimal(5, 2)
+  passMarks    Decimal      @default(40.00) @db.Decimal(5, 2)
+  instructions String?      @db.Text
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  submissions  Submission[]
+  grades       Grade[]
+
+  @@index([programmeId])
+  @@map("assessments")
+}
+
+model Submission {
+  id           String     @id @default(uuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  fileName     String
+  fileSizeKb   Decimal    @db.Decimal(8, 2)
+  fileType     String     // PDF, DOCX
+  submittedAt  DateTime   @default(now())
+  isLate       Boolean    @default(false)
+  version      Int        @default(1)
+  comments     String?    @db.Text
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([assessmentId, studentId])
+  @@index([assessmentId])
+  @@index([studentId])
+  @@map("submissions")
+}
+
+model Grade {
+  id             String              @id @default(uuid())
+  assessmentId   String
+  assessment     Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  numericGrade   Decimal             @db.Decimal(5, 2)
+  classification GradeClassification // Pass >= 40, Merit >= 60, Distinction >= 70, Fail < 40
+  isPublished    Boolean             @default(false)
+  feedback       String?             @db.Text
+  gradedBy       String              @default("Registry Examiner")
+  gradedAt       DateTime            @default(now())
+  publishedAt    DateTime?
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([assessmentId, studentId])
+  @@index([assessmentId])
+  @@index([studentId])
+  @@map("grades")
+}
